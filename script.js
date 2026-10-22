@@ -60,7 +60,7 @@ function atualizarTela() {
         totalReceitas += centavos;
     } else {
         saldoEmCentavos -= centavos;
-        total += centavos;
+        totalDespesas += centavos;
     }
 
     // A criação do item e do botão continua aqui.
