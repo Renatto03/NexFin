@@ -126,3 +126,31 @@ async function verificarAPI() {
 }
 
 verificarAPI();
+
+async function carregarTransacoes() {
+    try {
+        const resposta = await fetch ("./api/listar_transacoes.php");
+
+        if (!resposta.ok) {
+            throw new Error ("Erro ao consultar transações");
+        }
+
+        const dados = await resposta.json();
+
+        movimentacoes = dados.map(function (item) {
+    return {
+        id: Number(item.id),
+        descricao: item.descricao,
+        valorEmCentavos: Math.round(Number(item.valor) * 100),
+        tipo: item.tipo
+        };
+    });
+
+    atualizarTela();
+
+    } catch (erro) {
+        console.error("Erro ao carregar transações", erro);
+    }
+}
+
+carregarTransacoes();
