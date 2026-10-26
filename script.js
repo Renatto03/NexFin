@@ -20,30 +20,49 @@ const moeda = new Intl.NumberFormat('pt-BR', {
 });
 
 formulario.addEventListener('submit', function (evento) {
-    evento.preventDefault();
+ evento.preventDefault();
 
     const descricao = campoDescricao.value.trim();
     const valor = Number(campoValor.value);
     const tipo = campoTipo.value;
-    const valorEmCentavos = Math.round(valor * 100);
 
-    if (descricao === "" || !Number.isFinite(valor) || valorEmCentavos <= 0) {
-        alert("Por favor, preencha uma descrição e um valor maior que zero.");
+    if (
+        descricao === "" ||
+        !Number.isFinite(valor) ||
+        valor <= 0
+    ) {
+        alert("Preencha uma descrição e um valor válido.");
         return;
     }
 
-    const movimentacao = {
-        descricao: descricao,
-        valorEmCentavos: valorEmCentavos,
-        tipo: tipo,
-    };
-    
-    movimentacoes.push(movimentacao);
-    localStorage.setItem("movimentacoes", JSON.stringify(movimentacoes));
-    
-    atualizarTela();
-    formulario.reset();
-    campoDescricao.focus();
+    try {
+        const resposta = await fetch("./api/salvar_transacao.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                descricao: descricao,
+                valor: valor.toFixed(2),
+                tipo: tipo
+            })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+            throw new Error(dados.erro || "Erro ao salvar");
+        }
+
+        await carregarTransacoes();
+
+        formulario.reset();
+        campoDescricao.focus();
+
+    } catch (erro) {
+        console.error("Erro:", erro);
+        alert("Não foi possível salvar a transação.");
+    }
 }); 
 
 function atualizarTela() {
