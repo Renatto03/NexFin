@@ -19,7 +19,7 @@ const moeda = new Intl.NumberFormat('pt-BR', {
     currency: 'BRL',
 });
 
-formulario.addEventListener('submit', function (evento) {
+formulario.addEventListener('submit', async function (evento) {
  evento.preventDefault();
 
     const descricao = campoDescricao.value.trim();
